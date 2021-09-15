@@ -1,2 +1,4 @@
-# Welcome to the Wizard Chess Repository! 
-We are a project under the Autonomous Robotics Club at Purdue and we are working on creating a life-sized version of chess, using computer vision to determine where the pieces are, and voice recognition to tell the pieces where to go.
+# Purdue-ARC-Wizard-Chess
+
+## Everything here will be used for the Wizard Chess team of the Purdue ARC Club
+Our goal is to make a fully autonomous chess game called "Wizard Chess" that will be played similarly to the Harry Potter movies.

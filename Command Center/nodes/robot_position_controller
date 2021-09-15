@@ -1,0 +1,146 @@
+#!/usr/bin/env python
+# license removed for brevity
+# ROS
+import rospy
+import math as m
+import random as r
+from std_msgs.msg import String
+import board as brd
+import pygame
+
+#from std_msgs.msg import Int32
+
+
+
+class PositionController(object):
+    
+    def __init__(self):
+        
+        rospy.init_node('position_controller')
+
+        self.gameDisplay = pygame.display.set_mode((600,600))
+        self.position_x = 6
+        self.position_y = 4
+
+        self.tile_length = 50
+        self.angle_robot = 0
+
+        self.pieces = []
+        self.pieces = brd.setPieces(self.pieces)
+
+
+        self.command = 0
+        self.heading = 0
+        self.velociy = 10
+        
+        self.desired_pos_x = 0
+        self.desired_pos_y = 0
+
+        #self.position_x += 2
+        #self.position_y -= 2
+
+        self.p1 = []
+        brd.printBoard(self.gameDisplay)
+        brd.printPieces(self.pieces, self.gameDisplay)
+
+        ''' self.vector = self.find_dist_to_point(self.desired_pos_x, self.desired_pos_y) #(y, x)
+        dist = (self.vector[0] ** 2 + self.vector[1] ** 2) ** 0.5
+        angle = self.find_heading(self.vector)
+
+        if self.desired_pos_x > self.position_x:
+            angle *= -1
+        
+        self.position_x = self.desired_pos_x
+        self.position_y = self.desired_pos_y'''
+        counter = 0
+
+        while not rospy.is_shutdown() and counter < 30:
+            # Commands
+            self.check_if_ready()
+
+            # Subscribers
+
+            rospy.Subscriber('chess/location', String, self.make_move)
+
+            # Publishers
+            self.pubReady = rospy.Publisher('chess/is_robot_ready', String, queue_size = 10)
+            self.pubReady.publish(str(self.isReady))
+
+            rospy.Rate(1).sleep()
+            counter += 1
+    
+    def make_move(self, position):
+        self.desired_pos_x = int(position.data[0])
+        self.desired_pos_y = int(position.data[1])
+        
+        #self.desired_pos_x += 2
+        #self.desired_pos_y -= 2
+
+        position_vector = self.find_dist_to_point(self.desired_pos_x, self.desired_pos_y)
+        desired_angle = self.find_heading(position_vector)
+
+        piece = [self.position_x, self.position_y] #start coord
+        turn = 'white'
+        loc = brd.getTriPoints(piece, turn)
+        
+        if self.p1 == []:
+            for p in self.pieces:
+                if p == loc:
+                    self.p1 = p
+                    break
+
+        desired_piece = [self.desired_pos_x, self.desired_pos_y]
+        desired_loc = brd.getTriPoints(desired_piece, turn)
+
+        
+        # rospy.loginfo('X: ' + str(self.desired_pos_x) + ' Y: ' + str(self.desired_pos_y))
+
+        
+        '''
+        if self.angle != self.heading:
+            angle_robot
+        if self.position_x != self.desired_pos_x:
+            travelled = brd.moveWheels()
+            self.position_x += travelled'''
+        rospy.loginfo(str(self.angle_robot - desired_angle))
+
+        if abs(self.angle_robot - desired_angle) > 0.1:
+            self.angle_robot += brd.moveWheels([5], [1], self.pieces, self.p1, turn, self.gameDisplay)
+            
+            rospy.loginfo(str(self.angle_robot) + ' ' + str(desired_angle))
+        '''
+        elif robot_pos != desired_robot_pos:
+            # move both wheels forward as long as the position is not correct'''
+
+    def check_if_ready(self):
+        self.isReady = '0'
+
+    def find_dist_to_point(self, point_x, point_y):
+        self.init_location_x = self.tile_length / 2 + self.tile_length * (self.position_x - 1)
+        self.init_location_y = self.tile_length / 2 + self.tile_length * (self.position_y - 1)
+        self.final_position_x = self.tile_length / 2 + self.tile_length * (point_x - 1)
+        self.final_position_y = self.tile_length / 2 + self.tile_length * (point_y - 1)
+
+        vector = [self.final_position_x - self.init_location_x, self.final_position_y - self.init_location_y]
+
+        return vector
+
+    def find_heading(self, vector):
+
+        angle_cos = vector[1] / m.sqrt(pow(vector[0], 2) + pow(vector[1], 2))
+        
+        heading = m.acos(angle_cos)
+
+        return heading
+
+    def move_robot(self, heading):
+
+        robot_pos_x = self.init_location_x
+        robot_pos_y = self.init_location_y
+        
+        while robot_pos_x < self.final_position_x and robot_pos_y < self.final_position_y:
+            robot_pos_x += self.velociy * m.sin(heading)
+            robot_pos_y += self.velociy * m.cos(heading)
+
+if __name__ == '__main__':
+        PositionController()

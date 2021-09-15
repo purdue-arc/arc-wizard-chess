@@ -1,0 +1,5 @@
+<launch>
+  <node type="get_command" pkg="robot_chess" name="get_command"/>
+  <node type="chess_alorithm" pkg="robot_chess" name="chess_alorithm"/>
+  <node type="robot_position_controller" pkg="robot_chess" name="robot_position_controller"/>
+</launch>
