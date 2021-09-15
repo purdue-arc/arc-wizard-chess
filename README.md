@@ -1,1 +1,1 @@
-# arc-wizard-chess
+# Welcome to the ARC GitHub Repository! 
