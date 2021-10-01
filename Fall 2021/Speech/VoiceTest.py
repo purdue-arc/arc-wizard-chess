@@ -76,7 +76,7 @@ def getMoveAudio():
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-#initialize listening of audio
+#initialize listening
 gameOver = False
 splitCommand = getStartAudio()
 
