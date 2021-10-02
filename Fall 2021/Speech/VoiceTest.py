@@ -65,24 +65,23 @@ def getMoveAudio():
     #translate audio file into string and split into components
     inputCommand = r.recognize_houndify(audio, HOUNDIFY_CLIENT_ID, HOUNDIFY_CLIENT_KEY)
     splitCommand = inputCommand.split()
-    print(splitCommand)
     
     if len(splitCommand) != 5 or splitCommand[2].lower() != "target":
+        print(splitCommand)
         print("Use the correct command: (start space) 'to' (end space)")
         splitCommand = getMoveAudio()
     
     
     #translate string numbers into usable integers
     if len(splitCommand) == 5:
-        print(splitCommand)
         splitCommand[1] = str(replaceStringWithNum(splitCommand[1]))
         splitCommand[4] = str(replaceStringWithNum(splitCommand[4]))
         
         if len(splitCommand[0]) != 1 or len(splitCommand[1]) != 1 or len(splitCommand[3]) != 1 or len(splitCommand[4]) != 1 :
             print("Use correct location formatting: letter (a to g) + number (1 to 8)")
+            print(splitCommand)
             splitCommand = getMoveAudio()
 
-    print(type(splitCommand))
     startSpace = [splitCommand[0], splitCommand[1]]
     endSpace = [splitCommand[3], splitCommand[4]]
     
