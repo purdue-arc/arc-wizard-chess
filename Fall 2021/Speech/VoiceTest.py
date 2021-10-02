@@ -14,9 +14,9 @@ HOUNDIFY_CLIENT_KEY = "766ChPXbWST6WnK12EAhdBNCVpBBbPt1J2LuLRRwoj53N2Y7yquZmoX8Z
 def replaceStringWithNum(inputString):
     outputNum = 0
     
-    if inputString == "one":
+    if inputString == "one" or inputString == "won":
         outputNum = 1
-    elif inputString == "two":
+    elif inputString == "two" or inputString == "to" or inputString == "too":
         outputNum = 2
     elif inputString == "three":
         outputNum = 3
@@ -65,30 +65,29 @@ def getMoveAudio():
     #translate audio file into string and split into components
     inputCommand = r.recognize_houndify(audio, HOUNDIFY_CLIENT_ID, HOUNDIFY_CLIENT_KEY)
     splitCommand = inputCommand.split()
+    print(splitCommand)
+    
+    if len(splitCommand) != 5 or splitCommand[2].lower() != "target":
+        print("Use the correct command: (start space) 'to' (end space)")
+        splitCommand = getMoveAudio()
+    
     
     #translate string numbers into usable integers
     if len(splitCommand) == 5:
+        print(splitCommand)
         splitCommand[1] = str(replaceStringWithNum(splitCommand[1]))
         splitCommand[4] = str(replaceStringWithNum(splitCommand[4]))
+        
+        if len(splitCommand[0]) != 1 or len(splitCommand[1]) != 1 or len(splitCommand[3]) != 1 or len(splitCommand[4]) != 1 :
+            print("Use correct location formatting: letter (a to g) + number (1 to 8)")
+            splitCommand = getMoveAudio()
+
+    print(type(splitCommand))
+    startSpace = [splitCommand[0], splitCommand[1]]
+    endSpace = [splitCommand[3], splitCommand[4]]
     
-    print(splitCommand)
-    return splitCommand
+    return startSpace, endSpace
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-#initialize listening
-gameOver = False
-splitCommand = getStartAudio()
 
-while gameOver != True:
-    #error checking and location designations
-    if len(splitCommand) != 5 or splitCommand[2].lower() != "target":
-        print("Use the correct command: (start space) 'target' (end space)")
-        splitCommand = getMoveAudio()
-    elif len(splitCommand[0]) != 1 or len(splitCommand[1]) != 1 or len(splitCommand[3]) != 1 or len(splitCommand[4]) != 1 :
-        print("Use correct location formatting: letter (a to g) + number (1 to 8)")
-        splitCommand = getMoveAudio()
-    else:
-        gameOver = True
-        startSpace = (splitCommand[0], splitCommand[1])
-        endSpace = (splitCommand[3], splitCommand[4])
