@@ -10,3 +10,5 @@ Code Contributors:
 - Dan English - Robot Movement files, Chess Algorithm
 - Aaron Lovell - Voice recognition
 - Adam Piaseczny - Command Center files, Chess Algorithm
+- Ben Roath - Voice Recognition
+- Win Shobbakbun - Compputer Vision
