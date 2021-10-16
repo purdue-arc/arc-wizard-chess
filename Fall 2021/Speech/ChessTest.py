@@ -21,14 +21,17 @@ while (board.is_check() != True and board.is_stalemate() != True):
         print("\nWhite's move")
     else:
         print("\nBlack's move")
-    inputKey = input("\nPress enter to say your move")
+        
     startSpace, endSpace = VoiceTest.getMoveAudio()
     move_to_make = str(startSpace[0] + startSpace[1] + endSpace[0] + endSpace[1])
-    if (board.push_san(move_to_make) != ValueError):
-        print("This is a valid move")
+    
+    try:
+        board.push_san(move_to_make)
         turnNum += 1
-    else:
-        print("Invalid move, please try again")
+    except ValueError:
+        print("Invalid move, please try again\n")
+        VoiceTest.getMoveAudio
+        
     print(board)
 
 #win statement
