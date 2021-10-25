@@ -12,3 +12,4 @@ Code Contributors:
 - Adam Piaseczny - Command Center files, Chess Algorithm
 - Ben Roath - Voice Recognition
 - Win Shobbakbun - Compputer Vision
+- Maheep Brar - Computer Vision
