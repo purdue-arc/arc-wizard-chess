@@ -11,5 +11,5 @@ Code Contributors:
 - Aaron Lovell - Voice recognition
 - Adam Piaseczny - Command Center files, Chess Algorithm
 - Ben Roath - Voice Recognition
-- Win Shobbakbun - Compputer Vision
+- Win Shobbakbun - Computer Vision
 - Maheep Brar - Computer Vision
