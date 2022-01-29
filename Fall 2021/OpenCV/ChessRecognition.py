@@ -21,7 +21,7 @@ while True:
     success, img = cap.read()
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     # Find the chess board corners
-    ret, corners = cv.findChessboardCorners(gray, (7, 7), None)
+    ret, corners = cv.findChessboardCorners(gray, (7, 7), None, cv.CALIB_CB_FAST_CHECK)
     # If found, add object points, image points (after refining them)
     if ret == True:
         objpoints.append(objp)
@@ -50,7 +50,13 @@ while True:
     '''
     
     cv.imshow('img', img)
-    cv.waitKey(1)
+    key = cv.waitKey(50)
+    if key != -1:
+        if key == 113:
+            break
+        else:
+            print(key)
+            break
 cv.waitKey(1)
 cv.destroyAllWindows()
 cv.waitKey(1)
