@@ -1,6 +1,48 @@
 import numpy as np
 import cv2 as cv
 
+def extendChessboard(conners):
+    newCorners = np.zeros((81, 1, 2), np.float32)
+    for index, pair in enumerate(conners):
+        pair = pair[0]
+        row, col = indexToRowCol(index, (7,7))
+        row += 1
+        col += 1
+        newIndex = rowColToIndex(row, col, (9,9))
+        newCorners[newIndex][0] = pair
+    # Manually extend the edge    
+    newCorners[0][0] = 2 * corners[0][0] - corners[8][0]
+    newCorners[8][0] = 2 * corners[6][0] - corners[12][0]
+    newCorners[72][0] = 2 * corners[42][0] - corners[36][0]
+    newCorners[80][0] = 2 * corners[48][0] - corners[40][0]
+    # extend the row
+    row = 0
+    for col in range(1,8):
+        i = rowColToIndex(row, col, (9,9))
+        i_1 = rowColToIndex(row, col-1, (7,7))
+        i_2 = rowColToIndex(row+1, col-1, (7,7))
+        newCorners[i][0] = 2 * corners[i_1][0] - corners[i_2][0]
+    row = 8
+    for col in range(1,8):
+        i = rowColToIndex(row, col, (9,9))
+        i_1 = rowColToIndex(row-2, col-1, (7,7))
+        i_2 = rowColToIndex(row-3, col-1, (7,7))
+        newCorners[i][0] = 2 * corners[i_1][0] - corners[i_2][0]
+    return newCorners
+
+def indexToRowCol(index,size):
+    c_count = size[1]
+
+    row = index // c_count
+    column = index % c_count
+    return row, column
+
+def rowColToIndex(row, col, size):
+    col_count = size[1]
+    
+    index = row * col_count + col
+    return index
+
 #import glob
 # termination criteria
 criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -27,28 +69,20 @@ while True:
         objpoints.append(objp)
         corners2 = cv.cornerSubPix(gray,corners, (11,11), (-1,-1), criteria)
         imgpoints.append(corners)
+        newCorners = extendChessboard(corners)
+        
+        print(corners)
+        print(f"Conners size = {corners.shape} {corners.dtype}")
+        print("\n\n\n")
+        print(newCorners)
+        print(f"NewConners size = {newCorners.shape}")
+        print("\n\n\n")
+        
         # Draw and display the corners
-        cv.drawChessboardCorners(img, (7,7), corners2, ret)
-        print(objp)
+        #cv.drawChessboardCorners(img, (7,7), corners2, ret)
+        cv.drawChessboardCorners(img, (9,9), newCorners, ret)
     output = img.copy()
-    # detect circles in the image
-    
-    '''
-    circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1, 10)
-    # ensure at least some circles were found
-    if circles is not None:
-    	# convert the (x, y) coordinates and radius of the circles to integers
-    	circles = np.round(circles[0, :]).astype("int")
-    	# loop over the (x, y) coordinates and radius of the circles
-    	for (x, y, r) in circles:
-    		# draw the circle in the output image, then draw a rectangle
-    		# corresponding to the center of the circle
-    		cv.circle(output, (x, y), r, (0, 255, 0), 4)
-    		cv.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
-    	# show the output image
-    	cv.imshow("Circle output", np.hstack([img, output]))
-    '''
-    
+
     cv.imshow('img', img)
     key = cv.waitKey(50)
     if key != -1:
