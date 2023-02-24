@@ -37,9 +37,8 @@ def initializeESP01(connectWifi):
     sendBasicAT('AT+CIPMUX=1',1, 1)
     sendBasicAT('AT+CIPSERVER=1,80',1, 1)
 
-def closeConnection(connectionId):
+def closeConnection(connectionId, messageToSendBack):
     try:
-        messageToSendBack = input('Enter Reply Message: ') # replace hardcode value with function of what the message body was
         stringsToSend = ['HTTP/1.1 200',
                          'Content-Type: text/html',
                          'Content-Length: ' + str(len(messageToSendBack)+2),
@@ -56,11 +55,21 @@ def closeConnection(connectionId):
 
 def processPayload(payload, connectionId):
     try:
-        print("The following payload was delivered from connection " + str(connectionId) + ":")
-        print(payload)
-        closeConnection(connectionId)
+        if(payload[0:10]=="FIRMWARE:\n"):
+            print("Firmware Update")
+            print("New Firmware")
+            print("------------")
+            firmware = payload[10:]
+            print(firmware)
+            reply = "successful"
+        else:
+            print("The following payload was delivered from connection " + str(connectionId) + ":")
+            print(payload)
+            reply = input('Enter Reply Message: ') # replace hardcode value with function of what the message body was
+        closeConnection(connectionId, reply)
     except:
         print("Error Processing Payload")
+        
 def processsHTTPMessage(message, connectionId):
     global userAgent
     global contentType
