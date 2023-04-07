@@ -1,5 +1,3 @@
-$code = 
-"
 import math
 import time
 from machine import Pin, ADC, PWM  
@@ -123,7 +121,6 @@ def getId(errorFileName):
     
 def processMessage(message, errorFileName):
     print('message received')
-    writeError('----\n', errorFileName)
     if message == 'Test_Message':
         return str(message + 'Yay6')
     elif message == 'Motors':
@@ -145,33 +142,3 @@ def processMessage(message, errorFileName):
         return str('Successful')
     else:
         return 'UndefinedMessage'
-"
-
-
-$maxStringLength = 100
-
-function consoleLogger
-{
-    process{Write-Host $_ -ForegroundColor yellow -BackgroundColor black}
-}
-
-Invoke-WebRequest -UseBasicParsing 192.168.2.2 -ContentType "text/plain" -Method POST -Body "FIRMWARE_CLEAR"
-Start-Sleep -Milliseconds 100
-
-while ($code) #While Code has not been displayed
-{
-    #Determine the length of the string that will be sent (as long as possible up to $maxStringLength)
-    $segmentLength = ($maxStringLength,($code.Length) | Measure -Min).Minimum
-
-    #Get the next segment of code and display the segment
-    $segment = $code.Substring(0,$segmentLength)
-    $messageBody = "FIRMWARE:`n" + $segment
-    Invoke-WebRequest -UseBasicParsing 192.168.2.2 -ContentType "text/plain" -Method POST -Body $messageBody
-
-    #Remove the displayed Segment from the code
-    $code = $code.Remove(0, $segmentLength)
-    Write-Output $code.Length | consoleLogger
-    Start-Sleep -Milliseconds 200 #This is necessary to allow for the ESP to switch back into "receiving mode"
-}
-
-Invoke-WebRequest -UseBasicParsing 192.168.2.2 -ContentType "text/plain" -Method POST -Body "FIRMWARE_COMPLETE"
